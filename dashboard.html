@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+</head>
+<body>
+  <h1>Welcome, <span id="user"></span></h1>
+  <p id="info"></p>
+  <button onclick="downloadScript()">Download Script</button>
+  <script>
+    const username = localStorage.getItem("user");
+    document.getElementById("user").textContent = username;
+    fetch("/userinfo/" + username + "/dummyhwid", {method: "POST"})
+      .then(r => r.json()).then(data => {
+        document.getElementById("info").textContent = "Time left: " + data.time;
+      });
+    function downloadScript() {
+      fetch("/script/" + username, {method: "POST"})
+        .then(r => r.json()).then(data => {
+          const content = atob(data.script);
+          const blob = new Blob([content], {type: "text/plain"});
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "loader.lua";
+          a.click();
+        });
+    }
+  </script>
+</body>
+</html>
